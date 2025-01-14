@@ -1,0 +1,29 @@
+{% extends "home.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<body>
+  <h1>Vote for Your Candidate</h1>
+
+  {% for candidate in candidates %}
+
+  <div>
+    <h2>{{ candidate.name }}</h2>
+
+    <img
+      src="{{ url_for('static', filename='uploads/' + candidate.image) }}"
+      alt="{{ candidate.name }}"
+      width="200"
+    />
+
+    <p>{{ candidate.description }}</p>
+
+    <p>Votes: {{ candidate.votes }}</p>
+
+    <form action="{{ url_for('vote', id=candidate.id) }}" method="post">
+      <button type="submit">Vote</button>
+    </form>
+  </div>
+
+  <hr />
+
+  {% endfor %} {% endblock %}
+</body>
