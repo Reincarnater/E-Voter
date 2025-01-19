@@ -6,7 +6,6 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
-import base64
 import qrcode
 
 
@@ -24,6 +23,9 @@ def login():
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 return redirect(url_for('views.home'))
+            elif email == 'Teacher@gmail.com' and password == 'Teachers123456789':
+                login_user(user, remember=True)
+                return redirect(url_for('views.Teacher_home'))
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
@@ -65,7 +67,7 @@ def sign_up():
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('auth.login'))
 
     return render_template("sign_up.html", user=current_user)
 
@@ -138,6 +140,7 @@ def teacher():
     return render_template('teacher.html', candidates=candidates)
 
 
+## This is for the authentication
 @auth.route('/Authenticate', methods=['GET', 'POST'] )
 @login_required
 def Authenticate_user():
@@ -146,3 +149,26 @@ def Authenticate_user():
     else:
         flash('Wrong Code', category='error')
     return render_template("Authenticator.html", user=current_user)
+
+
+
+## This is for the Image upload and showing
+@auth.route('/add_candidate', methods=['GET', 'POST'])
+def add_candidate():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        if 'image' not in request.files:
+            flash('No file part', category='error')
+            return redirect(request.url)
+        image = request.files['image']
+        if image.filename == '':
+            flash('No selected file', category='error')
+            return redirect(request.url)
+        if image:
+            filename = secure_filename(image.filename)
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image.save(image_path)
+            flash('Candidate successfully added', category='success')
+            return render_template('display_candidate.html', name=name, description=description, image_filename=filename)
+    return render_template('Voting_System_Teachers.html')

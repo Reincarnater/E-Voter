@@ -1,0 +1,25 @@
+{% extends "Teacher_home.html" %} {% block title %}Home{% endblock %} {% block content
+    %}
+    </head>
+    <body>
+        <h1>Teacher's Panel: Add Candidates</h1>
+    
+        <form method="POST" enctype="multipart/form-data">
+    
+            <label>Name:</label>
+    
+            <input type="text" name="name" required><br>
+    
+            <label>Description:</label>
+    
+            <textarea name="description" required></textarea><br>
+    
+            <label>Picture:</label>
+    
+            <input type="file" name="image" required><br>
+    
+            <button type="submit">Add Candidate</button>
+    
+        </form>
+        
+{$ endblock $}    

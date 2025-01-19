@@ -12,7 +12,7 @@ def home():
     
     return render_template("home.html", user=current_user)
 
-@views.route('/voting', methods=['GET', 'POST'])
+@views.route('/vote', methods=['GET', 'POST'])
 @login_required
 def voting_system():
     
@@ -24,7 +24,7 @@ def Teacher_home():
     
     return render_template("Teacher_home.html", user=current_user)
 
-@views.route('/vote', methods=['GET', 'POST'])
+@views.route('/voting', methods=['GET', 'POST'])
 @login_required
 def Teacher_voting_system():
     
