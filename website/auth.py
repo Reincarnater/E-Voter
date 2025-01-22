@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, app,  render_template,render_template_string, request, flash, redirect, url_for
-from .models import User, Candidate
+from .models import User, Candidate, Upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
@@ -152,8 +152,7 @@ def Authenticate_user():
 
 
 
-## This is for the Image upload and showing
-@auth.route('/add_candidate', methods=['GET', 'POST'])
+@auth.route('/add_candidate', methods=['POST'])
 def add_candidate():
     if request.method == 'POST':
         name = request.form['name']
@@ -169,6 +168,12 @@ def add_candidate():
             filename = secure_filename(image.filename)
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image.save(image_path)
+            
+            # Save upload information to the database
+            new_upload = Upload(filename=filename, name=name, description=description)
+            db.session.add(new_upload)
+            db.session.commit()
+            
             flash('Candidate successfully added', category='success')
             return render_template('display_candidate.html', name=name, description=description, image_filename=filename)
     return render_template('Voting_System_Teachers.html')

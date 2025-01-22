@@ -26,3 +26,10 @@ class User(db.Model, UserMixin):
 
 class QR_Code(db.Model):
     QrCode = db.Column(db.Integer, primary_key=True)
+
+class Upload(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(150), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    votes = db.Column(db.Integer, default=0)

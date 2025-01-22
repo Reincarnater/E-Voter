@@ -24,11 +24,17 @@ def Teacher_home():
     
     return render_template("Teacher_home.html", user=current_user)
 
-@views.route('/voting', methods=['GET', 'POST'])
+@views.route('/add_candidate', methods=['GET', 'POST'])
 @login_required
 def Teacher_voting_system():
     
-    return render_template("Voting_System_Teachers.html", user=current_user)
+    return render_template("add_candidate.html", user=current_user)
+
+@views.route('/display_candidate', methods=['GET', 'POST'])
+@login_required
+def displaying_Candidates():
+    
+    return render_template("display_candidate.html", user=current_user)
 
 @views.route('/Verify')
 def Verify():
