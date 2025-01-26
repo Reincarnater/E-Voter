@@ -14,7 +14,7 @@
       href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       crossorigin="anonymous"
     />
-    
+
     <title>{% block title %}Verify{% endblock %}</title>
   </head>
   <body>
@@ -29,26 +29,37 @@
       </button>
       <div class="collapse navbar-collapse" id="navbar">
         <div class="navbar-nav">
-          <a class="nav-item nav-link" id="home" href="/login">Back</a>
-          <a class="nav-item nav-link" id="logout" href="/sign_up">Sign Up</a>
+          {% if user.is_authenticated %}
+          <a class="nav-item nav-link" id="home" href="/">Home</a>
+          <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+          <a class="nav-item nav-link" id="voting" href="/vote">Voting</a>
+          {% else %}
+          <a class="nav-item nav-link" id="login" href="/login">Login</a>
+          <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
+          {% endif %}
         </div>
       </div>
     </nav>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <h1>Scan the QR Code</h1>
-    <img src="static/images/Qr_Code.png" alt="Qr Code" />
-  </br>
-  <form action="{{ url_for('auth.authenticate') }}" method="POST">
-  <input
-      type="QrCode"
-      class="form-control"
-      id="QrCode"
-      name="QrCode"
-      placeholder="Enter code"
-    />
-    <input type="submit" value="Submit Code" class="btn btn-secondary" />
-    </form>
+
+    <h1>Vote for Your Candidate</h1>
+    {% for candidate in candidates %}
+    <div>
+      <h2>{{ candidate.name }}</h2>
+      <img
+        src="/static/images/{{ candidate.image }}"
+        alt="{{ candidate.name }}"
+        width="200"
+      />
+      <p>{{ candidate.description }}</p>
+      <p>Votes: {{ candidate.votes }}</p>
+      <form action="/vote/{{ candidate.id }}" method="GET">
+        <input type="submit" value="Vote" class="btn btn-secondary" />
+      </form>
+    </div>
+    <hr />
+    {% endfor %}
 
     <script
       src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

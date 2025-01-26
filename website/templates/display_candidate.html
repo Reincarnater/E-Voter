@@ -1,15 +1,15 @@
 {% extends "Teacher_home.html" %} {% block title %}Home{% endblock %} {% block
 content %}
-<head>
-  <title>Candidate Details</title>
-</head>
-<body>
-  <h1>Candidate Details</h1>
-  <p>Name: {{ name }}</p>
-  <p>Description: {{ description }}</p>
+<div type="container">
+  <title>Candidate's Information:</title>
+  {% for candidate in candidates %}
+  <h1>{{ candidate.name }}</h1>
   <img
-    src="{{ url_for('static', filename='uploads/' + image_filename) }}"
-    alt="Candidate Image"
+    src="/static/images/{{ candidate.image }}"
+    alt="{{ candidate.name }}"
+    width="200"
   />
-</body>
-{% endblock %}
+  <h4>{{ candidate.description }}</h4>
+  <h4>Votes: {{ candidate.votes }}</h4>
+</div>
+{% endfor %} {% endblock %}

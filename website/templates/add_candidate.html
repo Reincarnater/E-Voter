@@ -1,24 +1,31 @@
-{% extends "Teacher_home.html" %} {% block title %}Home{% endblock %} {% block content
-    %}
-    </head>
-    <body>
-        <h1>Teacher's Panel: Add Candidates</h1>
-    
-        <form method="POST" enctype="multipart/form-data">
-    
-            <label>Name:</label>
-    
-            <input type="text" name="name" required><br>
-    
-            <label>Description:</label>
-    
-            <textarea name="description" required></textarea><br>
-    
-            <label>Picture:</label>
-    
-            <input type="file" name="image" required><br>
-    
-            <button type="submit">Add Candidate</button>
-    
-        </form>
-{% endblock %}
+{% extends "Teacher_home.html" %} {% block title %}Adding Candidates{% endblock
+%} {% block content %}
+<h1>Teacher's Panel: Add Candidates</h1>
+<br />
+<div class="container">
+  <form action="/add_candidate" method="POST" enctype="multipart/form-data">
+    <input type="text" placeholder="Name" name="name" />
+    <input type="text" placeholder="Description..." name="description" />
+    <input
+      type="file"
+      name="image"
+      pvalue="Upload Image"
+      class="btn btn-secondary btn-sm"
+      required
+    />
+    <!--<input
+      type="text"
+      placeholder="Enter Position Nominee is aiming for (ex. President)"
+      name="Positon"
+    /> -->
+    <input type="submit" value="Add Candidate" class="btn btn-secondary" />
+  </form>
+</div>
+<br /><br />
+<h1>Existing Candidates:</h1>
+{% for candidate in candidates %}
+<h4>{{ candidate.name }}</h4>
+<a href="/display_candidate/{{ candidate.id }}">View</a>
+<a href="/update_candidates/{{ candidate.id }}">Update</a>
+<a href="/delete_candidates/{{ candidate.id }}">Delete</a>
+{% endfor %} {% endblock %}

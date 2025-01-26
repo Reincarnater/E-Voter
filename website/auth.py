@@ -1,12 +1,15 @@
 import os
 from flask import Blueprint, app,  render_template,render_template_string, request, flash, redirect, url_for
-from .models import User, Candidate, Upload
+from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
+from werkzeug.utils import secure_filename
 from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
 import qrcode
+import pyotp
+
+
 
 
 auth = Blueprint('auth', __name__)
@@ -22,7 +25,7 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return redirect(url_for('auth.authenticate'))
             elif email == 'Teacher@gmail.com' and password == 'Teachers123456789':
                 login_user(user, remember=True)
                 return redirect(url_for('views.Teacher_home'))
@@ -65,115 +68,28 @@ def sign_up():
                 password1, method='pbkdf2:sha256'))
             db.session.add(new_user)
             db.session.commit()
+
             login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('auth.login'))
 
     return render_template("sign_up.html", user=current_user)
 
-# Home Page (Voting Interface)
-
-@auth.route('/Candidates')
-
-def index():
-
-    candidates = Candidate.query.all()
-
-    return render_template('home.html', candidates=candidates)
-
-
-# Cast Vote
-
-@auth.route('/vote/<int:id>', methods=['POST'])
-
-def vote(id):
-
-    candidate = Candidate.query.get_or_404(id)
-
-    candidate.votes += 1
-
-    db.session.commit()
-
-    return redirect(url_for('index'))
-
-
-# Teacher's Panel (Add Candidates)
-
-@auth.route('/teacher', methods=['GET', 'POST'])
-
-def teacher():
-
-    if request.method == 'POST':
-
-        name = request.form['name']
-
-        description = request.form['description']
-
-        image = request.files['image']
-
-        filename = secure_filename(image.filename)
-
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-        
-
-        new_candidate = Candidate(
-
-            name=name,
-
-            description=description,
-
-            image=filename
-
-        )
-
-        db.session.add(new_candidate)
-
-        db.session.commit()
-
-        return redirect(url_for('teacher'))
-
-    
-
-    candidates = Candidate.query.all()
-
-    return render_template('teacher.html', candidates=candidates)
-
 
 ## This is for the authentication
 @auth.route('/Authenticate', methods=['GET', 'POST'] )
 @login_required
-def Authenticate_user():
-    if qrcode.QRCode.verify(input):
+def authenticate():
+   if request.method == 'POST':
+      qr_code = request.form.get('QrCode')
+        
+        # Verify the QR code using TOTP
+      totp = pyotp.TOTP('ResearchGroupProgrammerSecretKey')
+      if totp.verify(qr_code):
+        flash('QR Code verified successfully!', category='success')
         return redirect(url_for('views.home'))
-    else:
-        flash('Wrong Code', category='error')
-    return render_template("Authenticator.html", user=current_user)
-
-
-
-@auth.route('/add_candidate', methods=['POST'])
-def add_candidate():
-    if request.method == 'POST':
-        name = request.form['name']
-        description = request.form['description']
-        if 'image' not in request.files:
-            flash('No file part', category='error')
-            return redirect(request.url)
-        image = request.files['image']
-        if image.filename == '':
-            flash('No selected file', category='error')
-            return redirect(request.url)
-        if image:
-            filename = secure_filename(image.filename)
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            image.save(image_path)
-            
-            # Save upload information to the database
-            new_upload = Upload(filename=filename, name=name, description=description)
-            db.session.add(new_upload)
-            db.session.commit()
-            
-            flash('Candidate successfully added', category='success')
-            return render_template('display_candidate.html', name=name, description=description, image_filename=filename)
-    return render_template('Voting_System_Teachers.html')
+      else:
+        flash('Invalid QR Code. Please try again.', category='error')
+        return redirect(url_for('auth.authenticate'))
+    
+   return render_template('Authenticator.html', user=current_user)

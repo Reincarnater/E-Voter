@@ -1,0 +1,25 @@
+{% extends "Teacher_home.html" %} {% block title %}Adding Candidates{% endblock
+%} {% block content %} <br /><br />
+<h1>Update Candidate:</h1>
+{% for candidate in candidates %}
+<h4>{{ candidate.name }}</h4>
+<div class="container">
+  <form
+    action="/update_candidates/{{ candidates_to_update.id}}"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <input type="text" placeholder="Update name" name="name" />
+    <input type="text" placeholder="Update Description..." name="description" />
+    <input
+      type="file"
+      name="image"
+      pvalue="Upload Image"
+      class="btn btn-secondary btn-sm"
+      required
+    />
+    <input type="submit" value="Update Candidate" class="btn btn-secondary" />
+  </form>
+</div>
+
+{% endfor %} {% endblock %}
