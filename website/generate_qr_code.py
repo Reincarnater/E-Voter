@@ -7,7 +7,7 @@ uri = pyotp.totp.TOTP(key).provisioning_uri(name="E-Voter",
                                                 issuer_name="E-Voter Website")
 print(uri)
 # Ensure the static/images directory exists
-output_dir = os.path.join(['UPLOAD_FOLDER'], 'images')
+output_dir = os.path.join(os.path.dirname(__file__), 'static', 'images')
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
