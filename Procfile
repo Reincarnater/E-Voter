@@ -1,1 +1,1 @@
-web: gunicorn --config gunicorn.conf.py gettingstarted.wsgi
+web:  main.py 
