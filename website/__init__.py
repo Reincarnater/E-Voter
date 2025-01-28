@@ -19,10 +19,9 @@ def create_app():
                                       'teachers' : 'sqlite:///teachers.db'}
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    path = r"/static/images/"
-    assert os.path.isfile(path)
-    with open(path, "r") as f:
-        pass
+    path = app.config['UPLOAD_FOLDER']
+    if not os.path.exists(path):
+        os.makedirs(path)
     
 
     db.init_app(app)
