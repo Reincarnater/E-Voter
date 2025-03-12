@@ -3,9 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from os import path
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
+migrate = Migrate()
 
 
 
@@ -25,6 +27,7 @@ def create_app():
     
 
     db.init_app(app)
+    migrate.init_app(app, db)
     app.app_context().push()
 
     from .views import views

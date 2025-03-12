@@ -7,6 +7,14 @@ import os
 
 views = Blueprint('views', __name__)
 
+def group_candidates_by_position(candidates):
+    grouped_candidates = {}
+    for candidate in candidates:
+        position = candidate.position
+        if position not in grouped_candidates:
+            grouped_candidates[position] = []
+        grouped_candidates[position].append(candidate)
+    return grouped_candidates
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
@@ -19,22 +27,17 @@ def home():
 @login_required
 def Candidate_List():
     candidates = Candidate.query.all()
-    return render_template('Candidate_List.html'
-                           , candidates=candidates, user=current_user)
+    grouped_candidates = group_candidates_by_position(candidates)
+    return render_template('Candidate_List.html', grouped_candidates=grouped_candidates, user=current_user)
 
-@views.route('/vote/<int:id>', methods=['GET', 'POST'])
+@views.route('/vote/<int:id>', methods=['POST'])
 @login_required
 def vote(id):
-    candidates = Candidate.query.get_or_404(id)
-    if request.method == "GET":
-        candidates.votes += 1
-        Voted = Candidate(votes=candidates.votes, name=candidates.name, description=candidates.description, image=candidates.image)
-        db.session.add(Voted)
-        db.session.commit()
-        flash('Your vote has been counted!', category='success')
-        return redirect(url_for('views.Candidate_List'))
-    else:
-     return redirect(url_for('views.Candidate_List'))
+    candidate = Candidate.query.get_or_404(id)
+    candidate.votes += 1
+    db.session.commit()
+    flash('Your vote has been counted!', category='success')
+    return redirect(url_for('views.candidate_list'))
 
 @views.route('/Teachers', methods=['GET', 'POST'])
 @login_required

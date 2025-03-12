@@ -8,6 +8,7 @@ from . import db   ##means from __init__.py import db
 from flask_login import login_user, login_required, logout_user, current_user
 import qrcode
 import pyotp
+import maskpass
 
 
 
@@ -35,7 +36,6 @@ def login():
             flash('Email does not exist.', category='error')
 
     return render_template("login.html", user=current_user)
-
 
 @auth.route('/logout')
 @login_required
